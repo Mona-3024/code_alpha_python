@@ -1,0 +1,60 @@
+import requests
+import json
+
+API_KEY = ' 0FJ6XRF67Q39NXHS'
+
+def get_stock_price(symbol):
+    url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey={API_KEY}'
+    response = requests.get(url)
+    data = response.json()
+    return data['Global Quote']['05. price']
+
+def add_stock_to_portfolio(portfolio, symbol, quantity):
+    if symbol in portfolio:
+        portfolio[symbol] += quantity
+    else:
+        portfolio[symbol] = quantity
+
+def remove_stock_from_portfolio(portfolio, symbol, quantity):
+    if symbol in portfolio:
+        portfolio[symbol] -= quantity
+        if portfolio[symbol] <= 0:
+            del portfolio[symbol]
+
+def display_portfolio(portfolio):
+    print("Current Portfolio:")
+    print("------------------")
+    for symbol, quantity in portfolio.items():
+        price = get_stock_price(symbol)
+        print(f"{symbol}: {quantity} shares | Current Price: ${price}")
+    print("------------------")
+    
+def main():
+    portfolio = {}
+
+    while True:
+        print("\nMenu:")
+        print("1. Add stock to portfolio")
+        print("2. Remove stock from portfolio")
+        print("3. Display portfolio")
+        print("4. Quit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            symbol = input("Enter stock symbol: ").upper()
+            quantity = int(input("Enter quantity of shares: "))
+            add_stock_to_portfolio(portfolio, symbol, quantity)
+        elif choice == '2':
+            symbol = input("Enter stock symbol: ").upper()
+            quantity = int(input("Enter quantity of shares to remove: "))
+            remove_stock_from_portfolio(portfolio, symbol, quantity)
+        elif choice == '3':
+            display_portfolio(portfolio)
+        elif choice == '4':
+            break
+        else:
+            print("Invalid choice. Please enter a number between 1 and 4.")
+
+if __name__ == "__main__":
+    main()
